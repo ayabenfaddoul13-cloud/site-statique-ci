@@ -1,0 +1,27 @@
+name: HTML CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validation-html:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Recuperer le code source
+        uses: actions/checkout@v6
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Installer HTMLHint
+        run: npm install -g htmlhint
+
+      - name: Verifier le code HTML
+        run: htmlhint "**/*.html"
