@@ -1,4 +1,4 @@
-name: aya html
+name: CI
 
 on:
   push:
