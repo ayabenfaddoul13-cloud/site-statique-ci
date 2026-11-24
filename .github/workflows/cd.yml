@@ -2,3 +2,12 @@ name: CD
 
 on:
   push:
+
+
+jobs:
+  validation-html:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Recuperer le code source
+        uses: actions/checkout@v6
