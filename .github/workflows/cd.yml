@@ -1,13 +1,62 @@
-name: CD
+
+name: HTML CI-CD
 
 on:
   push:
+    branches: [main]
+  workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
+
   validation-html:
     runs-on: ubuntu-latest
 
     steps:
       - name: Recuperer le code source
         uses: actions/checkout@v6
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Installer HTMLHint
+        run: npm install -g htmlhint
+
+      - name: Verifier la qualite du HTML
+        run: htmlhint "**/*.html"
+
+      - name: Configurer GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Preparer le site web
+        run: |
+          mkdir site
+          cp index.html site/
+
+      - name: Upload du site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: './site'
+
+  deploiement:
+    needs: validation-html
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deployer sur GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
